@@ -13,7 +13,7 @@ class PurchaseOrder(models.Model):
         result = super(PurchaseOrder, self).button_confirm()
         for rec in self:
             # Check if status is 'purchase' or 'done'
-            if rec.state not in ['purchase', 'done']:
+            if rec.state in ['purchase', 'done']:
                 continue
                 
             employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', rec.user_id.id)])
