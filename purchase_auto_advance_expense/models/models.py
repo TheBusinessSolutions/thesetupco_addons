@@ -12,6 +12,10 @@ class PurchaseOrder(models.Model):
     def button_confirm(self):
         result = super(PurchaseOrder, self).button_confirm()
         for rec in self:
+            # Check if status is 'purchase' or 'done'
+            if rec.state not in ['purchase', 'done']:
+                continue
+                
             employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', rec.user_id.id)])
             if not employee_id:
                 raise UserError(
@@ -21,27 +25,22 @@ class PurchaseOrder(models.Model):
                 lines = []
                 for line in rec.order_line:
                     lines.append((0, 0, {
-                        #'date': rec.date_approve.date(),
                         'date': rec.date_order.date(),
                         'name': line.product_id.name,
                         'quantity': line.product_qty,
                         'total_amount':line.price_subtotal,
                         'unit_amount':line.price_unit,
                         'employee_id': employee_id.id,
-
                     }))
 
                 vals={
                     'name':rec.name,
                     'employee_id' : employee_id.id,
                     'clearing_date_due' :rec.date_order.date(),
-                    #'clearing_date_due':rec.date_approve.date(),
                     'total_amount':rec.amount_total,
                     'advance': True,
                     'advance_purchase_order_id': rec.id,
                     'expense_line_ids':lines,
-
-
                 }
                 advance_expense_id = self.env['hr.expense.sheet'].create(vals)
                 advance_expense_id.action_submit_sheet()
