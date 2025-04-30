@@ -33,8 +33,8 @@ class PurchaseOrder(models.Model):
                 vals={
                     'name':rec.name,
                     'employee_id' : employee_id.id,
-                    # 'clearing_date_due' :rec.date_order.date(),
-                    'clearing_date_due':rec.date_approve.date(),
+                    'clearing_date_due' :rec.date_order.date(),
+                    #'clearing_date_due':rec.date_approve.date(),
                     'total_amount':rec.amount_total,
                     'advance': True,
                     'advance_purchase_order_id': rec.id,
