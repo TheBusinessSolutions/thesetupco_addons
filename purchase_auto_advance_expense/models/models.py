@@ -21,7 +21,8 @@ class PurchaseOrder(models.Model):
                 lines = []
                 for line in rec.order_line:
                     lines.append((0, 0, {
-                        'date': rec.date_approve.date(),
+                        #'date': rec.date_approve.date(),
+                        'date': rec.date_order.date(),
                         'name': line.product_id.name,
                         'quantity': line.product_qty,
                         'total_amount':line.price_subtotal,
