@@ -9,8 +9,10 @@ class PurchaseOrder(models.Model):
 
     create_auto_expense = fields.Boolean(string='Create Auto Expense')
 
-    def button_confirm(self):
-        result = super(PurchaseOrder, self).button_confirm()
+    #def button_confirm(self):
+    def button_approve(self):
+        #result = super(PurchaseOrder, self).button_confirm()
+        result = super(PurchaseOrder, self).button_approve()
         for rec in self:
             employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', rec.user_id.id)])
             if not employee_id:
