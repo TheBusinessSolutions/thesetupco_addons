@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_finance_operation,finance_operation,model_finance_operation,base.group_user,1,1,1,1
+access_edit_ir_sequence,ir_sequence_admin,base.model_ir_sequence,bank_statement_cutomization.group_finance_manager,1,1,1,0

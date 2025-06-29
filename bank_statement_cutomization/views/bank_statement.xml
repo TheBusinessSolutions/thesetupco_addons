@@ -1,0 +1,48 @@
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="bank_statement_form_inherit">
+      <field name="name">account bank statement form inherit</field>
+      <field name="model">account.bank.statement</field>
+      <field name="inherit_id" ref="account.view_bank_statement_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='line_ids']/tree//field[@name='date']" position="before">
+          <field name="line_sequence" force_save='1' readonly='1'/>
+          <field name="operation_type"/>
+        </xpath>
+
+        <xpath expr="//field[@name='line_ids']/tree//field[@name='partner_id']" position="before">
+          <field name="analytic_account_id" optional="show"/>
+          <field name="analytic_tag_ids" widget="many2many_tags" optional="show"/>
+        </xpath>
+
+
+        <xpath expr="//field[@name='line_ids']/tree" position="inside">
+          <!-- attrs="{'invisible':[('state','not in',('posted','confirm'))]}" -->
+          <button type="action" string="Print Line" class="oe_highlight" name="%(bank_statement_cutomization.action_report_bank_statment_line_layout)d" optional='show'/>
+        </xpath>
+      </field>
+    </record>
+
+    <template id="report_bank_statement_inherit" inherit_id="account.report_statement">
+      <xpath expr="//tr[@t-foreach='o.line_ids']/td/table/tr/td[1]" position="before">
+        <td class="p-0">
+          <span class="d-block font-weight-bold" t-field="line.line_sequence"/>
+        </td>
+        <td class="p-0">
+          <span class="d-block" t-field="line.operation_type"/>
+        </td>
+      </xpath>
+      <xpath expr="//tr[@t-foreach='o.line_ids']/td/table/tr/td[4]" position="before">
+        <td class="p-0">
+          <span class="d-block" t-field="line.analytic_account_id"/>
+        </td>
+        <td class="p-0 w-25">
+          <span class="d-block" t-esc="','.join(line.analytic_tag_ids.mapped('name'))"/>
+        </td>
+      </xpath>
+  </template>
+
+
+  </data>
+</odoo>

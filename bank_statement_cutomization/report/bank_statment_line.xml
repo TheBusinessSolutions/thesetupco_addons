@@ -1,0 +1,152 @@
+<odoo>
+  <data>
+
+    <record id="action_report_bank_statment_line_layout" model="ir.actions.report">
+      <field name="name">Bank Statement Line</field>
+      <field name="model">account.bank.statement.line</field>
+      <field name="report_type">qweb-pdf</field>
+      <field name="report_name">bank_statement_cutomization.print_bank_statment_line_template</field>
+      <field name="report_file">bank_statement_cutomization.print_bank_statment_line_template</field>
+      <!-- <field name="binding_type">report</field> -->
+    </record>
+
+    
+    <template id="print_bank_statment_line_template">
+      <t t-call="web.html_container">
+          <t t-call="web.external_layout">
+            <t t-foreach="docs" t-as="o">
+                  <div class="page">
+                      <div class="border border-top-0 border-right-0 border-left-0 border-info">
+                          <div class="row">
+                              <div class="col-12">
+                                  <h4 class="text-right w-100">
+                                      <strong>
+                                          <span t-if="o.statement_id.journal_id.type == 'bank'">Bank Statement</span>
+                                          <span t-else="">Cash Statement</span>
+                                      </strong>
+                                  </h4>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="pt-2 pb-2">
+                          <div class="row">
+                              <div class="col-12">
+                                  <h5>
+                                      <strong>
+                                          <span t-field="o.statement_id.journal_id"/>
+                                          <t t-if="o.statement_id.journal_id.bank_account_id"> -
+                                              <span t-field="o.statement_id.journal_id.bank_account_id"/>
+                                          </t>
+                                          <t t-if="o.statement_id.journal_id.code"> -                                                
+                                              <span t-field="o.statement_id.journal_id.code"/>
+                                          </t>
+                                      </strong>
+                                  </h5>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                  <h5>
+                                      <strong>
+                                          <t t-if="o.statement_id.name">
+                                              <span t-field="o.statement_id.name"/> 
+                                          - </t>
+                                          <span t-field="o.statement_id.date"/>
+                                      </strong>
+                                  </h5>
+                              </div>
+                          </div>
+                      </div>
+
+                      <table class="table table-lg m-0 table-borderless border border-right-0 border-left-0 border-info">
+                          <tbody>
+                              <tr>
+                                  <td class="pt-2 pb-2 pl-0 pr-0">
+                                      <table class="table table-borderless m-0">
+                                          <tr>
+                                              <td class="p-0 w-25">
+                                                  <strong>Starting Balance</strong>
+                                              </td>
+                                              <td class="p-0">
+                                                  <strong>
+                                                      <span t-esc="o.date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                                  </strong>
+                                              </td>
+                                              <td class="text-right p-0">
+                                                  <strong>
+                                                      <span t-field="o.statement_id.balance_start"/>
+                                                  </strong>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td class="p-0 w-25">
+                                                  <strong>Ending Balance</strong>
+                                              </td>
+                                              <td class="p-0">
+                                                  <strong>
+                                                      <span t-esc="o.date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                                  </strong>
+                                              </td>
+                                              <td class="text-right p-0">
+                                                  <strong>
+                                                      <span t-field="o.statement_id.balance_end_real"/>
+                                                  </strong>
+                                              </td>
+                                          </tr>
+                                      </table>
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </table>
+
+                      <table class="table table-borderless m-0">
+                          <tbody>
+                              <tr class="pb-2">
+                                  <td class="pl-0 pr-0">
+                                      <table class="table table-borderless">
+                                          <tr>
+                                            <td class="p-0">
+                                              <span class="d-block font-weight-bold" t-field="o.line_sequence"/>
+                                            </td>
+                                            <td class="p-0">
+                                              <span class="d-block" t-field="o.operation_type"/>
+                                            </td>
+
+                                            
+                                            <td class="p-0 w-25">
+                                                <span class="d-block font-weight-bold" t-field="o.date"/>
+                                            </td>
+
+                                            <td class="p-0">
+                                              <span class="d-block" t-field="o.analytic_account_id"/>
+                                            </td>
+                                            <td class="p-0 w-25">
+                                              <span class="d-block" t-esc="','.join(o.analytic_tag_ids.mapped('name'))"/>
+                                            </td>
+
+                                            <td class="p-0">
+                                                <span class="d-block font-weight-bold" t-if="o.partner_id" t-field="o.partner_id"/>
+                                                <span class="d-block" t-if="o.partner_bank_id" t-field="o.partner_bank_id"/>
+                                                <span class="d-block" t-if="o.payment_ref" t-field="o.payment_ref"/>
+                                                <span class="d-block" t-if="o.narration" t-field="o.narration"/>
+                                            </td>
+                                            <td class="text-right p-0">
+                                                <span class="d-block font-weight-bold" t-field="o.amount"/>
+                                            </td>
+                                          </tr>
+                                      </table>
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+            </t>
+          </t>
+      </t>
+    </template>
+
+    
+
+  </data>
+</odoo>

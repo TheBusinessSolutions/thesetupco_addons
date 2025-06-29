@@ -1,0 +1,95 @@
+<odoo>
+  <data>
+
+    
+    <record id="view_finance_operations_filter" model="ir.ui.view">
+      <field name="name">finance.operation.list.select</field>
+      <field name="model">finance.operation</field>
+      <field name="priority" eval="15"/>
+      <field name="arch" type="xml">
+          <search string="Search Sales Order">
+              <field name="name" string="Finance Operation Name"/>
+               <!-- filter_domain="['|', '|', ('name', 'ilike', self), ('client_order_ref', 'ilike', self), ('partner_id', 'child_of', self)]"/> -->
+              <field name="operation_sequence_id" operator="child_of"/>
+          </search>
+      </field>
+  </record>
+
+  <record id="view_order_tree" model="ir.ui.view">
+    <field name="name">finance.operation.tree</field>
+    <field name="model">finance.operation</field>
+    <field name="arch" type="xml">
+      <tree string="Finance Operation">
+        <field name="name" string='Finance Operation Name'/>
+        <field name="operation_sequence_id" string="Operation Sequence"/>     
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_order_form" model="ir.ui.view">
+    <field name="name">finance.operation.form</field>
+    <field name="model">finance.operation</field>
+    <field name="arch" type="xml">
+      <form string="Finance Operation">
+        
+        <sheet>
+          <group>
+              <group>
+                <field name="name" string='Finance Operation Name'/>
+                <field name="operation_sequence_id" string="Operation Sequence"/>
+             </group>
+            <!--  <group></group> -->
+          </group>
+    
+        </sheet>
+        
+        <!-- <div class="oe_chatter">
+            <field name="message_follower_ids"/>
+            <field name="activity_ids"/>
+            <field name="message_ids"/>
+        </div> -->
+      </form>
+    </field>
+  </record>
+
+
+  <record id="action_finance_operation_orders" model="ir.actions.act_window">
+      <field name="name">Finance Operation</field>
+      <field name="res_model">finance.operation</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_finance_operations_filter"/>
+      <!-- <field name="view_id" ref="bank_statement_cutomization.view_order_form"/> -->
+      <field name="context">{}</field>
+      <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new finance operation,
+          </p><p>
+          </p>
+      </field>
+  </record>
+
+  <record model="ir.actions.act_window.view" id="action_finance_operation_tree_bank">
+    <field name="sequence" eval="1"/>
+    <field name="view_mode">tree</field>
+    <field name="view_id" ref="bank_statement_cutomization.view_order_tree"/>
+    <field name="act_window_id" ref="action_finance_operation_orders"/>
+  </record>
+  <record model="ir.actions.act_window.view" id="action_finance_operation_form_bank">
+      <field name="sequence" eval="2"/>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="bank_statement_cutomization.view_order_form"/>
+      <field name="act_window_id" ref="action_finance_operation_orders"/>
+  </record>
+    
+  <menuitem id="menu_finance_operation_order"
+      name="Finance Operation"
+      action="action_finance_operation_orders"
+      parent="account.account_banks_menu"
+      sequence="10"/>
+
+
+
+
+
+  </data>
+</odoo>
