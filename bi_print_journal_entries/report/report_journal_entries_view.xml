@@ -64,21 +64,8 @@
 								<span t-field="line.date_maturity" />
 							</td>
 							<td>
-								<!-- Fixed Analytic Distribution Logic for Odoo 17 -->
-								<t t-if="line.analytic_distribution">
-									<t t-foreach="line.analytic_distribution.keys()" t-as="analytic_account_id">
-										<t t-set="analytic_id" t-value="int(analytic_account_id)"/>
-										<t t-set="percentage" t-value="line.analytic_distribution[analytic_account_id]"/>
-										<t t-set="analytic_account" t-value="line.env['account.analytic.account'].browse(analytic_id)"/>
-										<t t-if="analytic_account.exists()">
-											<span t-esc="analytic_account.name"/>
-											<t t-if="analytic_account.partner_id">
-												- <span t-esc="analytic_account.partner_id.name"/>
-											</t>
-											(<span t-esc="percentage"/>%)<br/>
-										</t>
-									</t>
-								</t>
+								<!-- Simple Analytic Display for Odoo 17 CE -->
+								<span t-field="line.analytic_account_id"/>
 							</td>
 							<td>
 								<span t-field="line.tax_ids" />
