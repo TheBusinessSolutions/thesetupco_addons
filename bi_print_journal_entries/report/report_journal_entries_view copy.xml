@@ -5,7 +5,7 @@
 
 		<template id="journal_entry_template_report_view">
 			<t t-call="web.external_layout">
-				<t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang}) if o.partner_id else o"/>
+				<t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang})"/>
 				<div class="page">
 					<br/>
 					<div class="oe_structure"/>
@@ -64,21 +64,23 @@
 								<span t-field="line.date_maturity" />
 							</td>
 							<td>
-								<!-- Fixed Analytic Distribution Logic for Odoo 17 -->
-								<t t-if="line.analytic_distribution">
-									<t t-foreach="line.analytic_distribution.keys()" t-as="analytic_account_id">
-										<t t-set="analytic_id" t-value="int(analytic_account_id)"/>
-										<t t-set="percentage" t-value="line.analytic_distribution[analytic_account_id]"/>
-										<t t-set="analytic_account" t-value="line.env['account.analytic.account'].browse(analytic_id)"/>
-										<t t-if="analytic_account.exists()">
-											<span t-esc="analytic_account.name"/>
-											<t t-if="analytic_account.partner_id">
-												- <span t-esc="analytic_account.partner_id.name"/>
+								<span>
+									<div t-foreach="line.analytic_distribution" t-as="distribution">
+										<t t-set="distributions" t-value="distribution.split(',')"/>
+										<t t-foreach="distributions" t-as="dist">
+											<t t-if="line.env['account.analytic.account'].browse(int(dist))[0].partner_id">
+												<t t-esc="line.env['account.analytic.account'].browse(int(dist))[0].name"/>- 
+												<t t-esc="line.env['account.analytic.account'].browse(int(dist))[0].partner_id.name"/>, 
+												<t t-esc="line.analytic_distribution.get(dist)"/>
 											</t>
-											(<span t-esc="percentage"/>%)<br/>
+											<t t-else="">
+												<t t-esc="line.env['account.analytic.account'].browse(int(dist))[0].name"/>,
+												<t t-esc="line.analytic_distribution.get(dist)"/>
+											</t>
+											<br/>
 										</t>
-									</t>
-								</t>
+									</div>
+								</span>
 							</td>
 							<td>
 								<span t-field="line.tax_ids" />
@@ -116,7 +118,7 @@
 		<template id="journal_entry_report_template_id">
 			<t t-call="web.html_container">
 				<t t-foreach="docs" t-as="o">
-					<t t-call="bi_print_journal_entries.journal_entry_template_report_view" t-lang="o.partner_id.lang if o.partner_id else 'en_US'"/>
+					<t t-call="bi_print_journal_entries.journal_entry_template_report_view"  t-lang="o.partner_id.lang"/>
 				</t>
 			</t>
 		</template>
