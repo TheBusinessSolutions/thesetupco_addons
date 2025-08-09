@@ -9,7 +9,9 @@ class PurchaseOrder(models.Model):
 
     create_auto_expense = fields.Boolean(string='Create Auto Expense')
 
+    #def button_confirm(self):
     def button_approve(self):
+        #result = super(PurchaseOrder, self).button_confirm()
         result = super(PurchaseOrder, self).button_approve()
         for rec in self:
             employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', rec.user_id.id)])
@@ -18,34 +20,36 @@ class PurchaseOrder(models.Model):
                     "No employee found for the current user. Please ensure the user is linked to an employee.")
 
             if rec.create_auto_expense:
-                # First create the expense sheet
-                expense_sheet = self.env['hr.expense.sheet'].create({
-                    'name': rec.name,
-                    'employee_id': employee_id.id,
-                    'clearing_date_due': rec.date_order.date(),
-                    'total_amount': rec.amount_total,
+                lines = []
+                for line in rec.order_line:
+                    lines.append((0, 0, {
+                        #'date': rec.date_approve.date(),
+                        'date': rec.date_order.date(),
+                        'name': line.product_id.name,
+                        'quantity': line.product_qty,
+                        'total_amount':line.price_subtotal,
+                        'unit_amount':line.price_unit,
+                        'employee_id': employee_id.id,
+
+                    }))
+
+                vals={
+                    'name':rec.name,
+                    'employee_id' : employee_id.id,
+                    'clearing_date_due' :rec.date_order.date(),
+                    #'clearing_date_due':rec.date_approve.date(),
+                    'total_amount':rec.amount_total,
                     'advance': True,
                     'advance_purchase_order_id': rec.id,
-                })
+                    'expense_line_ids':lines,
 
-                # Then create individual expense lines and link them to the sheet
-                for line in rec.order_line:
-                    expense_line = self.env['hr.expense'].create({
-                        'name': line.product_id.name or line.name or 'Expense from PO',  # This is the mandatory field
-                        'date': rec.date_order.date(),
-                        'quantity': line.product_qty,
-                        'total_amount': line.price_subtotal,
-                        'unit_amount': line.price_unit,
-                        'employee_id': employee_id.id,
-                        'sheet_id': expense_sheet.id,  # Link to the expense sheet
-                        'product_id': line.product_id.id if line.product_id else False,
-                    })
 
-                # Now submit and approve the expense sheet
-                expense_sheet.action_submit_sheet()
-                expense_sheet.approve_expense_sheets()
-                
+                }
+                advance_expense_id = self.env['hr.expense.sheet'].create(vals)
+                advance_expense_id.action_submit_sheet()
+                advance_expense_id.approve_expense_sheets()
         return result
+
 
     def open_advance_expense_sheet(self):
         for rec in self:
@@ -58,7 +62,6 @@ class PurchaseOrder(models.Model):
                 'view_mode': 'form',
                 'res_id': expense_sheet.id,
             }
-
 
 class HrExpenseSheet(models.Model):
     _inherit = "hr.expense.sheet"
