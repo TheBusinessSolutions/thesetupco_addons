@@ -39,6 +39,7 @@ class PurchaseOrder(models.Model):
                         'employee_id': employee_id.id,
                         'sheet_id': expense_sheet.id,  # Link to the expense sheet
                         'product_id': line.product_id.id if line.product_id else False,
+                        'tax_ids': [(6, 0, line.taxes_id.ids)],  # Copy taxes from PO line
                     })
 
                 # Now submit and approve the expense sheet
